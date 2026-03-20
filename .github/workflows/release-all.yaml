@@ -1,0 +1,113 @@
+name: Release All
+run-name: ${{ format('{0} {1}', inputs.is-dry-run && 'Dry-run' || 'Release', inputs.tag) }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag / Version number (e.g. 1.0.1)"
+        required: true
+      is-dry-run:
+        description: "Dry-run (trigger dry-runs on all repos, no publish)"
+        type: boolean
+      modules:
+        description: "Comma-separated repo names to release (blank = all)"
+        required: false
+
+jobs:
+  release:
+    name: Trigger releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check input tag format
+        run: |
+          if ! echo "${{ inputs.tag }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error title=Invalid package version number::Version numbers must follow the Major.Minor.Patch format (e.g. 1.45.320)."
+            exit 1
+          fi
+
+      - name: Trigger release workflows
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_DISPATCH_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.is-dry-run }}
+          FILTER: ${{ inputs.modules }}
+        run: |
+          ORG="h2-modpack"
+
+          ALL_REPOS=(
+            "h2-modpack-Lib"
+            "h2-modpack-Core"
+            "h2-modpack-BraidFix"
+            "h2-modpack-CardioTorchFix"
+            "h2-modpack-CharybdisBehavior"
+            "h2-modpack-CorrosionFix"
+            "h2-modpack-DisableArachnePity"
+            "h2-modpack-DisableSeleneBeforeBoon"
+            "h2-modpack-EscalatingFigLeaf"
+            "h2-modpack-ETFix"
+            "h2-modpack-ExtraDoseFix"
+            "h2-modpack-FamiliarDelayFix"
+            "h2-modpack-FirstHammer"
+            "h2-modpack-ForceArachne"
+            "h2-modpack-ForceMedea"
+            "h2-modpack-GGGFix"
+            "h2-modpack-KBMEscape"
+            "h2-modpack-MiniBossEncounterFix"
+            "h2-modpack-OmegaCastFix"
+            "h2-modpack-PoseidonWavesFix"
+            "h2-modpack-PreventEchoScam"
+            "h2-modpack-RTAMode"
+            "h2-modpack-SecondStageChanneling"
+            "h2-modpack-SeleneFix"
+            "h2-modpack-ShimmeringFix"
+            "h2-modpack-ShowLocation"
+            "h2-modpack-SkipDeathCutscene"
+            "h2-modpack-SkipDialogue"
+            "h2-modpack-SkipGemBossReward"
+            "h2-modpack-SkipRunEndCutscene"
+            "h2-modpack-SpawnLocation"
+            "h2-modpack-SpeedrunTimer"
+            "h2-modpack-StagedOmegaFix"
+            "h2-modpack-SufferingFix"
+            "h2-modpack-SurfaceStructure"
+            "h2-modpack-TidalRingFix"
+            "h2-modpack-VictoryScreen"
+          )
+
+          # If a filter is provided, only release those repos
+          if [ -n "$FILTER" ]; then
+            IFS=',' read -ra REPOS <<< "$FILTER"
+            # Trim whitespace
+            for i in "${!REPOS[@]}"; do
+              REPOS[$i]=$(echo "${REPOS[$i]}" | xargs)
+            done
+          else
+            REPOS=("${ALL_REPOS[@]}")
+          fi
+
+          SUCCEEDED=0
+          FAILED=0
+
+          for REPO in "${REPOS[@]}"; do
+            echo "--- Triggering: $ORG/$REPO ---"
+            if gh workflow run release.yaml \
+              --repo "$ORG/$REPO" \
+              --field "tag=$TAG" \
+              --field "is-dry-run=$DRY_RUN"; then
+              echo "  Dispatched."
+              SUCCEEDED=$((SUCCEEDED + 1))
+            else
+              echo "  FAILED to dispatch."
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo ""
+          echo "=========================================="
+          echo "  Dispatched: $SUCCEEDED / $((SUCCEEDED + FAILED))"
+          if [ "$FAILED" -gt 0 ]; then
+            echo "  Failed: $FAILED"
+            exit 1
+          fi
+          echo "=========================================="
