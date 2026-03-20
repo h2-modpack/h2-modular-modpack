@@ -54,4 +54,4 @@ FirstHammer
 
 ## Contributing
 
-See [adamant-modpack-Core/CONTRIBUTING.md](adamant-modpack-Core/CONTRIBUTING.md) and [adamant-modpack-Lib/CONTRIBUTING.md](adamant-modpack-Lib/CONTRIBUTING.md).
+See [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Core/blob/main/CONTRIBUTING.md) and [Lib CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Lib/blob/main/CONTRIBUTING.md).
