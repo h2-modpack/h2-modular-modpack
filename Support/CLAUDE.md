@@ -42,7 +42,7 @@ h2-modular-modpack/           # Shell repo
 - `src/main.lua` — module entry point (ENVY auto, chalk config, modutil hooks)
 - `src/config.lua` — default config values (Chalk persists user changes)
 - `thunderstore.toml` — package metadata (namespace, name, version, dependencies)
-- `R2M/` — per-repo local dev deployment (symlink scripts)
+- `Setup/` — per-repo local dev: `init_repo.bat/.sh` (hooks + branch protection), `deploy_local.bat/.sh` (assets + manifest + symlinks)
 - `.luacheckrc` — per-repo luacheck config with module-specific globals
 
 ## Testing
@@ -73,7 +73,7 @@ python Setup/deploy_hooks.py                  # configure git hooks
 
 ### Adding a new module
 1. Create repo from `h2-modpack-template` on GitHub
-2. Run `init.sh` to configure hooks + branch protection
+2. Run `Setup/init_repo.sh` (Linux) or `Setup/init_repo.bat` (Windows) to configure hooks + branch protection
 3. Copy `src/main.lua` (standard) or `src/main_special.lua` (special module)
 4. Fill in `public.definition`, `apply()`, `registerHooks()`
 5. Update `thunderstore.toml` with actual name/description
