@@ -1,111 +1,148 @@
 [submodule "adamant-modpack-Core"]
 	path = adamant-modpack-Core
 	url = https://github.com/h2-modpack/h2-modpack-Core.git
+	branch = main
 [submodule "adamant-modpack-Lib"]
 	path = adamant-modpack-Lib
 	url = https://github.com/h2-modpack/h2-modpack-Lib.git
+	branch = main
 [submodule "Submodules/adamant-BraidFix"]
 	path = Submodules/adamant-BraidFix
 	url = https://github.com/h2-modpack/h2-modpack-BraidFix.git
+	branch = main
 [submodule "Submodules/adamant-CardioTorchFix"]
 	path = Submodules/adamant-CardioTorchFix
 	url = https://github.com/h2-modpack/h2-modpack-CardioTorchFix.git
+	branch = main
 [submodule "Submodules/adamant-CharybdisBehavior"]
 	path = Submodules/adamant-CharybdisBehavior
 	url = https://github.com/h2-modpack/h2-modpack-CharybdisBehavior.git
+	branch = main
 [submodule "Submodules/adamant-CorrosionFix"]
 	path = Submodules/adamant-CorrosionFix
 	url = https://github.com/h2-modpack/h2-modpack-CorrosionFix.git
+	branch = main
 [submodule "Submodules/adamant-DisableArachnePity"]
 	path = Submodules/adamant-DisableArachnePity
 	url = https://github.com/h2-modpack/h2-modpack-DisableArachnePity.git
+	branch = main
 [submodule "Submodules/adamant-DisableSeleneBeforeBoon"]
 	path = Submodules/adamant-DisableSeleneBeforeBoon
 	url = https://github.com/h2-modpack/h2-modpack-DisableSeleneBeforeBoon.git
+	branch = main
 [submodule "Submodules/adamant-ETFix"]
 	path = Submodules/adamant-ETFix
 	url = https://github.com/h2-modpack/h2-modpack-ETFix.git
+	branch = main
 [submodule "Submodules/adamant-EscalatingFigLeaf"]
 	path = Submodules/adamant-EscalatingFigLeaf
 	url = https://github.com/h2-modpack/h2-modpack-EscalatingFigLeaf.git
+	branch = main
 [submodule "Submodules/adamant-ExtraDoseFix"]
 	path = Submodules/adamant-ExtraDoseFix
 	url = https://github.com/h2-modpack/h2-modpack-ExtraDoseFix.git
+	branch = main
 [submodule "Submodules/adamant-FamiliarDelayFix"]
 	path = Submodules/adamant-FamiliarDelayFix
 	url = https://github.com/h2-modpack/h2-modpack-FamiliarDelayFix.git
+	branch = main
 [submodule "Submodules/adamant-FirstHammer"]
 	path = Submodules/adamant-FirstHammer
 	url = https://github.com/h2-modpack/h2-modpack-FirstHammer.git
+	branch = main
 [submodule "Submodules/adamant-ForceArachne"]
 	path = Submodules/adamant-ForceArachne
 	url = https://github.com/h2-modpack/h2-modpack-ForceArachne.git
+	branch = main
 [submodule "Submodules/adamant-ForceMedea"]
 	path = Submodules/adamant-ForceMedea
 	url = https://github.com/h2-modpack/h2-modpack-ForceMedea.git
+	branch = main
 [submodule "Submodules/adamant-GGGFix"]
 	path = Submodules/adamant-GGGFix
 	url = https://github.com/h2-modpack/h2-modpack-GGGFix.git
+	branch = main
 [submodule "Submodules/adamant-KBMEscape"]
 	path = Submodules/adamant-KBMEscape
 	url = https://github.com/h2-modpack/h2-modpack-KBMEscape.git
+	branch = main
 [submodule "Submodules/adamant-MiniBossEncounterFix"]
 	path = Submodules/adamant-MiniBossEncounterFix
 	url = https://github.com/h2-modpack/h2-modpack-MiniBossEncounterFix.git
+	branch = main
 [submodule "Submodules/adamant-OmegaCastFix"]
 	path = Submodules/adamant-OmegaCastFix
 	url = https://github.com/h2-modpack/h2-modpack-OmegaCastFix.git
+	branch = main
 [submodule "Submodules/adamant-PoseidonWavesFix"]
 	path = Submodules/adamant-PoseidonWavesFix
 	url = https://github.com/h2-modpack/h2-modpack-PoseidonWavesFix.git
+	branch = main
 [submodule "Submodules/adamant-PreventEchoScam"]
 	path = Submodules/adamant-PreventEchoScam
 	url = https://github.com/h2-modpack/h2-modpack-PreventEchoScam.git
+	branch = main
 [submodule "Submodules/adamant-RTAMode"]
 	path = Submodules/adamant-RTAMode
 	url = https://github.com/h2-modpack/h2-modpack-RTAMode.git
+	branch = main
 [submodule "Submodules/adamant-SecondStageChanneling"]
 	path = Submodules/adamant-SecondStageChanneling
 	url = https://github.com/h2-modpack/h2-modpack-SecondStageChanneling.git
+	branch = main
 [submodule "Submodules/adamant-SeleneFix"]
 	path = Submodules/adamant-SeleneFix
 	url = https://github.com/h2-modpack/h2-modpack-SeleneFix.git
+	branch = main
 [submodule "Submodules/adamant-ShimmeringFix"]
 	path = Submodules/adamant-ShimmeringFix
 	url = https://github.com/h2-modpack/h2-modpack-ShimmeringFix.git
+	branch = main
 [submodule "Submodules/adamant-ShowLocation"]
 	path = Submodules/adamant-ShowLocation
 	url = https://github.com/h2-modpack/h2-modpack-ShowLocation.git
+	branch = main
 [submodule "Submodules/adamant-SkipDeathCutscene"]
 	path = Submodules/adamant-SkipDeathCutscene
 	url = https://github.com/h2-modpack/h2-modpack-SkipDeathCutscene.git
+	branch = main
 [submodule "Submodules/adamant-SkipDialogue"]
 	path = Submodules/adamant-SkipDialogue
 	url = https://github.com/h2-modpack/h2-modpack-SkipDialogue.git
+	branch = main
 [submodule "Submodules/adamant-SkipGemBossReward"]
 	path = Submodules/adamant-SkipGemBossReward
 	url = https://github.com/h2-modpack/h2-modpack-SkipGemBossReward.git
+	branch = main
 [submodule "Submodules/adamant-SkipRunEndCutscene"]
 	path = Submodules/adamant-SkipRunEndCutscene
 	url = https://github.com/h2-modpack/h2-modpack-SkipRunEndCutscene.git
+	branch = main
 [submodule "Submodules/adamant-SpawnLocation"]
 	path = Submodules/adamant-SpawnLocation
 	url = https://github.com/h2-modpack/h2-modpack-SpawnLocation.git
+	branch = main
 [submodule "Submodules/adamant-SpeedrunTimer"]
 	path = Submodules/adamant-SpeedrunTimer
 	url = https://github.com/h2-modpack/h2-modpack-SpeedrunTimer.git
+	branch = main
 [submodule "Submodules/adamant-StagedOmegaFix"]
 	path = Submodules/adamant-StagedOmegaFix
 	url = https://github.com/h2-modpack/h2-modpack-StagedOmegaFix.git
+	branch = main
 [submodule "Submodules/adamant-SufferingFix"]
 	path = Submodules/adamant-SufferingFix
 	url = https://github.com/h2-modpack/h2-modpack-SufferingFix.git
+	branch = main
 [submodule "Submodules/adamant-SurfaceStructure"]
 	path = Submodules/adamant-SurfaceStructure
 	url = https://github.com/h2-modpack/h2-modpack-SurfaceStructure.git
+	branch = main
 [submodule "Submodules/adamant-TidalRingFix"]
 	path = Submodules/adamant-TidalRingFix
 	url = https://github.com/h2-modpack/h2-modpack-TidalRingFix.git
+	branch = main
 [submodule "Submodules/adamant-VictoryScreen"]
 	path = Submodules/adamant-VictoryScreen
 	url = https://github.com/h2-modpack/h2-modpack-VictoryScreen.git
+	branch = main
