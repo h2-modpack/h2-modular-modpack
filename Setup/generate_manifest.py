@@ -10,66 +10,6 @@ import json
 import re
 
 
-def parse_toml_simple(toml_path):
-    """
-    Minimal TOML parser — only extracts the fields we need.
-    Handles [package], [package.dependencies], and simple key = "value" pairs.
-    """
-    with open(toml_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    result = {
-        "namespace": "",
-        "name": "",
-        "description": "",
-        "versionNumber": "",
-        "websiteUrl": "",
-        "dependencies": {},
-    }
-
-    current_section = ""
-
-    for line in lines:
-        stripped = line.strip()
-
-        # Track sections
-        if stripped.startswith("["):
-            current_section = stripped.strip("[]").strip()
-            continue
-
-        # Skip empty/comment lines
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        # Parse key = value
-        match = re.match(r'^(\S+)\s*=\s*(.+)$', stripped)
-        if not match:
-            continue
-
-        key = match.group(1)
-        raw_value = match.group(2).strip()
-
-        # Remove quotes from string values
-        if raw_value.startswith('"') and raw_value.endswith('"'):
-            value = raw_value[1:-1]
-        else:
-            value = raw_value
-
-        if current_section == "package":
-            if key == "namespace":
-                result["namespace"] = value
-            elif key == "name":
-                result["name"] = value
-            elif key == "description":
-                result["description"] = value
-            elif key == "versionNumber":
-                result["versionNumber"] = value
-            elif key == "websiteUrl":
-                result["websiteUrl"] = value
-        elif current_section == "package.dependencies":
-            # key = "version" -> dependency entry
-            result["dependencies"][key] = value
-
 
 def parse_toml(toml_path):
     """

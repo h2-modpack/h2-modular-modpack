@@ -7,7 +7,7 @@ Modular modpack for Hades II. Each module is a standalone mod that works indepen
 ```
 adamant-modpack-Core/    -- coordinator: unified UI, profiles, config hashing
 adamant-modpack-Lib/     -- shared library: module contract, field types, utilities
-Submodules/              -- 35 individual modules (bug fixes, run modifiers, QoL)
+Submodules/              -- all individual modules
 Setup/                   -- local deployment scripts
 ```
 
@@ -37,20 +37,6 @@ The script will, for each module:
 - Symlink `src/` and `data/` into the r2modman dev profile
 
 3. Launch Hades II through r2modman using the `h2-dev` profile.
-
-## Current Modules
-
-### Run Modifiers
-ForceMedea, ForceArachne, DisableArachnePity, PreventEchoScam, DisableSeleneBeforeBoon, RTAMode, SkipGemBossReward, EscalatingFigLeaf, SurfaceStructure, CharybdisBehavior
-
-### QoL
-ShowLocation, SkipDialogue, SkipRunEndCutscene, SkipDeathCutscene, SpawnLocation, KBMEscape, VictoryScreen, SpeedrunTimer
-
-### Bug Fixes
-CorrosionFix, GGGFix, BraidFix, MiniBossEncounterFix, ExtraDoseFix, PoseidonWavesFix, TidalRingFix, ShimmeringFix, StagedOmegaFix, OmegaCastFix, CardioTorchFix, FamiliarDelayFix, SufferingFix, SeleneFix, ETFix, SecondStageChanneling
-
-### Special
-FirstHammer
 
 ## Contributing
 
