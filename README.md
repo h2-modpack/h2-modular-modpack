@@ -31,10 +31,16 @@ git clone --recurse-submodules https://github.com/h2-modpack/h2-modular-modpack.
 
 **Linux/macOS** — `sudo ./Setup/lin.sh`
 
-The script will, for each module:
-- Copy `icon.png` and `LICENSE` into the module's `src/` folder
-- Generate `manifest.json` from `thunderstore.toml`
-- Symlink `src/` and `data/` into the r2modman dev profile
+The script will, for each module: copy `icon.png` and `LICENSE` into `src/`, generate `manifest.json` from `thunderstore.toml`, and symlink `src/` and `data/` into the r2modman dev profile.
+
+Individual tasks can be run separately (all support `--overwrite` and `--profile NAME`):
+
+```
+python Setup/deploy_links.py       # symlinks only
+python Setup/deploy_manifests.py   # regenerate manifests only
+python Setup/deploy_assets.py      # copy icon + LICENSE only
+python Setup/deploy_hooks.py       # configure git hooks only
+```
 
 3. Launch Hades II through r2modman using the `h2-dev` profile.
 
