@@ -23,6 +23,9 @@ Setup/                   -- local deployment scripts
 
 ```
 git clone --recurse-submodules https://github.com/h2-modpack/h2-modular-modpack.git
+
+git submodule foreach --quiet 'git checkout main'
+
 ```
 
 2. Run the setup script for your platform:
