@@ -27,6 +27,7 @@ h2-modular-modpack/           # Shell repo
 ### Module System
 - Each module is a standalone Thunderstore mod with its own `thunderstore.toml`, `src/main.lua`, and `config.lua`
 - Modules declare a `public.definition` table (id, name, category, group, options, apply/revert)
+- `def.category` is a human-readable tab label string (e.g. `"Bug Fixes"`, `"Run Modifiers"`, `"QoL"`) — used as both lookup key and display label
 - Lib provides: `createBackupSystem()`, `createSpecialState()`, `standaloneUI()`, field encode/decode, path helpers
 - Core discovers installed `adamant-*` modules via `rom.mods`, provides unified UI and config hashing
 - Modules work standalone (own ImGui toggle) or coordinated (Core handles UI)
@@ -87,4 +88,9 @@ python Setup/deploy_hooks.py                  # configure git hooks
 ### Modifying Lib API
 - Source in `Lib/src/main.lua`
 - Tests in `Lib/tests/` (TestFieldTypes, TestPathHelpers, TestValidation, etc.)
-- Template files in `Lib/src/template.lua` and `Lib/src/special_template.lua`
+- Canonical templates in `h2-modpack-template/src/` (`main.lua`, `main_special.lua`)
+
+### Adding a module to discovery
+- Append mod name string to `Core/src/discovery_registry.lua` — flat string list, no metadata
+- `enforce-discovery-order.yml` CI will fail if existing entries are reordered or removed
+- Category tab is created automatically from `def.category` — no registry change needed for new categories

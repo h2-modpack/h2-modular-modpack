@@ -49,4 +49,6 @@ python Setup/deploy_hooks.py       # configure git hooks only
 
 ## Contributing
 
-See [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Core/blob/main/CONTRIBUTING.md) and [Lib CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Lib/blob/main/CONTRIBUTING.md).
+- [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Core/blob/main/CONTRIBUTING.md) — architecture, discovery, hash, UI staging
+- [Lib CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Lib/blob/main/CONTRIBUTING.md) — public API, module contract, field types
+- [h2-modpack-template](https://github.com/h2-modpack/h2-modpack-template) — starting point for new modules
