@@ -28,13 +28,13 @@ h2-modular-modpack/           # Shell repo
 - Each module is a standalone Thunderstore mod with its own `thunderstore.toml`, `src/main.lua`, and `config.lua`
 - Modules declare a `public.definition` table (id, name, category, group, options, apply/revert)
 - `def.category` is a human-readable tab label string (e.g. `"Bug Fixes"`, `"Run Modifiers"`, `"QoL"`) — used as both lookup key and display label
-- Lib provides: `createBackupSystem()`, `createSpecialState()`, `standaloneUI()`, field encode/decode, path helpers
+- Lib provides: `createBackupSystem()`, `createSpecialState()`, `standaloneUI()`, field type registry (toHash/fromHash/draw/validate), path helpers
 - Core discovers installed `adamant-*` modules via `rom.mods`, provides unified UI and config hashing
 - Modules work standalone (own ImGui toggle) or coordinated (Core handles UI)
 
 ### Key Technical Details
 - **Lua 5.1** runtime (Hades 2's engine), 32-bit integers only
-- **Config hash**: base62 encoding, 30-bit chunks (CHUNK_BITS=30), format `<bool_hash>.<option_hash>`
+- **Config hash**: key-value canonical string (`ModId=1|ModId.configKey=val|adamant-Special.key=val`), only non-default values encoded. 12-char base62 fingerprint shown on HUD (dual-seed djb2, not decodable). Import/export uses canonical string.
 - **Backup system**: first-call-only semantics, backup() saves original, revert() restores
 - **Special modules**: have `stateSchema` for Core hashing, `staging` table for fast UI reads
 - **ModifyTextBox({ Text = "" })** does NOT clear text — must use `ClearText = true`
@@ -48,7 +48,7 @@ h2-modular-modpack/           # Shell repo
 
 ## Testing
 - Tests use **LuaUnit** on **Lua 5.1** (`C:\libs\lua51\lua.exe` on this machine)
-- Core tests: `adamant-modpack-Core/tests/` — hash encode/decode, chunk boundaries, round-trips
+- Core tests: `adamant-modpack-Core/tests/` — key-value hash round-trips, omit-defaults, fingerprint stability, error handling
 - Lib tests: `adamant-modpack-Lib/tests/` — field types, path helpers, validation, backup, state mgmt
 - Engine globals are mocked in `TestUtils.lua` (rom, ENVY, chalk, modutil)
 - Run tests: `cd <repo> && lua tests/all.lua`
@@ -91,6 +91,6 @@ python Setup/deploy_hooks.py                  # configure git hooks
 - Canonical templates in `h2-modpack-template/src/` (`main.lua`, `main_special.lua`)
 
 ### Adding a module to discovery
-- Append mod name string to `Core/src/discovery_registry.lua` — flat string list, no metadata
-- `enforce-discovery-order.yml` CI will fail if existing entries are reordered or removed
-- Category tab is created automatically from `def.category` — no registry change needed for new categories
+- Set `modpackModule = true` in the module's `public.definition` — Core auto-discovers it on load
+- Set `def.category` to the desired tab name (e.g. `"Bug Fixes"`) — new tabs are created automatically
+- No registry file, no Core PR, no CI enforcement needed
