@@ -20,10 +20,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check input tag format
+        env:
+          TAG: ${{ inputs.tag }}
+          FILTER: ${{ inputs.modules }}
         run: |
-          if ! echo "${{ inputs.tag }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+          if ! echo "$TAG" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "::error title=Invalid package version number::Version numbers must follow the Major.Minor.Patch format (e.g. 1.45.320)."
             exit 1
+          fi
+
+          # Extract the patch version (the 3rd number)
+          PATCH_VERSION=$(echo "$TAG" | cut -d. -f3)
+
+          if [ -z "$FILTER" ]; then
+            if [ "$PATCH_VERSION" != "0" ]; then
+              echo "::error title=Invalid Mass Release Version::Mass releases (all modules) must end in .0 (e.g., 1.2.0) to reserve patch numbers for hotfixes."
+              exit 1
+            fi
+          else
+            if [ "$PATCH_VERSION" == "0" ]; then
+              echo "::error title=Invalid Hotfix Version::Targeted hotfixes must use a patch version greater than .0 (e.g., 1.2.1)."
+              exit 1
+            fi
           fi
 
       - name: Trigger release workflows
@@ -35,10 +53,9 @@ jobs:
         run: |
           ORG="h2-modpack"
 
-          # Read module list from the registry — single source of truth.
-          # Lib and Core are not in the registry (they are infrastructure, not modules).
-          REGISTRY_MODULES=$(gh api repos/$ORG/h2-modpack-Core/contents/src/discovery_registry.lua \
-            --jq '.content' | base64 -d | grep -oP '"adamant-\K[^"]+' | sed 's/^/h2-modpack-/')
+          # Dynamically discover all modules directly from the shell repo's Submodules directory.
+          REGISTRY_MODULES=$(gh api repos/$ORG/h2-modular-modpack/contents/Submodules \
+            --jq '.[].name' | grep '^adamant-' | sed 's/^adamant-/h2-modpack-/')
 
           mapfile -t ALL_REPOS <<< "$(printf 'h2-modpack-Lib\nh2-modpack-Core\n%s' "$REGISTRY_MODULES")"
 

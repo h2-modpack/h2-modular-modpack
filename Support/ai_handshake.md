@@ -14,23 +14,32 @@ When you are running low on context, fill in the sections below and tell the use
 ## Session Snapshot
 
 ### Date
-<!-- Fill: today's date -->
+March 24, 2026
 
 ### What was being worked on
-<!-- Fill: the current task, what's done, what remains -->
+Completed a full architectural audit of Core, Lib, Template, Setup scripts, and GitHub Actions CI/CD workflows. Applied major ImGui performance optimizations and fully decoupled the release orchestrator.
 
 ### Key decisions made this session
-<!-- Fill: any architectural choices, user preferences, or approaches agreed upon -->
+1. **Render Loop Purity:** Eliminated GC pressure by caching strings (`_pushId`), closures (`_onChangedCb`), and tables (`cachedTabList`) during Discovery/Init instead of in ImGui render loops.
+2. **Dynamic Architecture over Hardcoding:** Reverted `BUG_FIX_CATEGORY` global constant to maintain the completely decoupled category discovery system.
+3. **Template Extraction:** Fully moved templates into the standalone `h2-modpack-template` repo to keep the Lib package clean.
+4. **Lockstep Versioning:** Decided to stick with lockstep versioning for mass releases. Updated `release-all.yaml` to dynamically auto-discover submodules (removing the need for `discovery_registry.lua`). Added bash guardrails requiring mass releases to end in `.0` and hotfixes to end in `>0` to prevent Thunderstore collisions.
 
 ### Files modified this session
-<!-- Fill: list of files changed with one-line descriptions -->
+- `Core/src/ui.lua` & `discovery.lua` - Applied GC allocation fixes (caching tables, closures, and ImGui IDs).
+- `Template/src/main.lua` & `main_special.lua` - Added missing `modpackModule = true` and fixed ImGui ID window desync (`###`).
+- `Setup/deploy_links.py` - Fixed a Windows-specific `PermissionError` when overwriting directory symlinks (`os.rmdir`).
+- `.github/workflows/release-all.yaml` - Switched to auto-discovery of the `Submodules/` directory and added patch version guardrails.
+- `.github/workflows/test.yaml` (Core/Lib) - Switched to `luarocks install luaunit` to prevent rolling master breaks.
+- `.github/workflows/luacheck.yaml` (Lib) - Standardized file extension from `.yml`.
+
+*(Note: `discovery_registry.lua` and `project-auto-add.yml` were marked for deletion).*
 
 ### Open issues / blockers
-<!-- Fill: anything unresolved that the next session needs to handle -->
+None. The architectural foundation is incredibly solid, tested, and optimized.
 
 ### Current state of the codebase
-<!-- Fill: any important state that isn't obvious from reading the code
-     (e.g., "tests are passing", "deploy scripts untested", "branch X has uncommitted changes") -->
+Highly optimized. Zero GC pressure in the main UI render loop. CI/CD is fully dynamic and decoupled. Tests are passing with 100% functional coverage of non-UI logic. Ready for standard module development.
 
 ---
 

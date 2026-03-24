@@ -19,7 +19,11 @@ def create_link(target, link_path, overwrite):
         if not overwrite:
             print(f"  SKIP (exists): {abs_link}")
             return
-        os.remove(abs_link) if os.path.islink(abs_link) else None
+        # Windows requires os.rmdir for directory symlinks, Unix uses os.remove
+        try:
+            os.remove(abs_link)
+        except (OSError, PermissionError):
+            os.rmdir(abs_link)
 
     os.makedirs(os.path.dirname(abs_link), exist_ok=True)
     os.symlink(abs_target, abs_link, target_is_directory=True)
