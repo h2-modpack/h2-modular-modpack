@@ -5,7 +5,7 @@ $setupDir = (Get-Location).Path
 $rootDir = Split-Path -Path $setupDir -Parent
 
 $targets = @()
-$targets += Join-Path $rootDir "adamant-modpack-Core"
+$targets += Join-Path $rootDir "adamant-modpack-coordinator"
 $targets += Join-Path $rootDir "adamant-modpack-Lib"
 
 # Dynamically grab all folders inside 'Submodules' that start with 'adamant-'

@@ -5,7 +5,7 @@ Modular modpack for Hades II. Each module is a standalone mod that works indepen
 ## Repository structure
 
 ```
-adamant-modpack-Core/    -- coordinator: unified UI, profiles, config hashing
+adamant-modpack-coordinator/    -- coordinator: unified UI, profiles, config hashing
 adamant-modpack-Lib/     -- shared library: module contract, field types, utilities
 Submodules/              -- all individual modules
 Setup/                   -- local deployment scripts
@@ -49,6 +49,6 @@ python Setup/deploy_hooks.py       # configure git hooks only
 
 ## Contributing
 
-- [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Core/blob/main/CONTRIBUTING.md) — architecture, discovery, hash, UI staging
+- [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-coordinator/blob/main/CONTRIBUTING.md) — architecture, discovery, hash, UI staging
 - [Lib CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Lib/blob/main/CONTRIBUTING.md) — public API, module contract, field types
 - [h2-modpack-template](https://github.com/h2-modpack/h2-modpack-template) — starting point for new modules

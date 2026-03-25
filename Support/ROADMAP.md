@@ -14,7 +14,7 @@ The solution is to split Core into two layers:
 - **Framework** — pure library, all the machinery, parameterized by pack identity
 - **Coordinator** — thin mod per pack, calls Framework.init, owns nothing else
 
-## Phase 1 — String convention for `modpackModule` (low effort, do now)
+## Phase 1 — String convention for `modpackModule` ✅ DONE
 
 **Why now:** This is a one-line change per module that unblocks everything later without breaking anything today.
 
@@ -24,7 +24,7 @@ modpackModule = true,
 ```
 to:
 ```lua
-modpack = "adamant-modpack",
+modpack = "h2-modpack",
 ```
 
 Change Core's discovery filter from:
@@ -36,15 +36,15 @@ to:
 if definition.modpack == Core._packId then
 ```
 
-Where `Core._packId = "adamant-modpack"` is set in Core's `main.lua`.
+Where `Core._packId = "h2-modpack"` is set in Core's `main.lua`.
 
-`"adamant-modpack"` is still truthy — any code that checks `if definition.modpack then` without comparing still works. No existing module breaks.
+`"h2-modpack"` is still truthy — any code that checks `if definition.modpack then` without comparing still works. No existing module breaks.
 
 **Files to update:**
 - All 35+ `Submodules/adamant-*/src/main.lua` definitions
 - `h2-modpack-template/src/main.lua` and `main_special.lua`
-- `adamant-modpack-Core/src/discovery.lua` (filter condition)
-- `adamant-modpack-Core/src/main.lua` (set `Core._packId`)
+- `adamant-modpack-coordinator/src/discovery.lua` (filter condition)
+- `adamant-modpack-coordinator/src/main.lua` (set `Core._packId`)
 - `Support/CLAUDE.md` (update the "Adding a module" section)
 
 ---
@@ -70,7 +70,7 @@ local pack = Framework.init({
 
 ### What moves into Framework
 
-Everything currently in `adamant-modpack-Core/src/`:
+Everything currently in `adamant-modpack-coordinator/src/`:
 - `discovery.lua` — parameterized by `packId`
 - `hash.lua` — pure logic, no changes needed
 - `hud.lua` — parameterized (which HUD component to inject)
@@ -123,10 +123,10 @@ Solution — **self-registering offset**: `Framework.init` writes each pack's `p
 
 ## Phase 3 — Multi-pack support
 
-Once Framework exists, a second modpack (e.g. `another-modpack-Core`) can use the same infrastructure:
+Once Framework exists, a second modpack (e.g. `another-modpackcoordinator`) can use the same infrastructure:
 
 ```lua
--- another-modpack-Core/src/main.lua
+-- another-modpackcoordinator/src/main.lua
 local Framework = rom.mods['adamant-Modpack_Framework']
 local pack = Framework.init({ packId = "another", windowTitle = "another modpack", config = config })
 ```

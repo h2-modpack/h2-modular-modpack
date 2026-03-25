@@ -12,7 +12,7 @@ The design goal is zero coupling between modules: a module author writes their l
 
 ### `adamant-Modpack_Core`
 The orchestrator. It owns:
-- **Discovery** — scans loaded mods at startup for `modpackModule = true`
+- **Discovery** — scans loaded mods at startup for `modpack = "modpack-namespace"`
 - **UI** — renders the shared window (sidebar, per-module tabs, quick setup, profiles, dev)
 - **Hash/profiles** — encodes all module state into a portable string; manages named profile slots
 - **HUD** — injects the fingerprint overlay into the game's HUD
@@ -53,7 +53,7 @@ Game starts
        └─ schedules modutil.once_loaded.game(...)
 
 Game data loads
-  ├─ Core runs discovery (scans rom.mods for modpackModule = true)
+  ├─ Core runs discovery (scans rom.mods for modpack = "modpack-namespace")
   └─ each module's loader fires:
        ├─ import_as_fallback(rom.game)   ← makes game globals available
        ├─ registerHooks()                ← wraps game functions via ModUtil

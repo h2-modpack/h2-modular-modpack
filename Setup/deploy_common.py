@@ -33,10 +33,11 @@ def get_toml_info(toml_path):
 
 
 def discover_mods():
-    """Returns list of mod directories (Core, Lib, then Submodules/adamant-*)."""
+    """Returns list of mod directories (Lib, Framework, Core, then Submodules/adamant-*)."""
     targets = [
-        os.path.join(ROOT_DIR, "adamant-modpack-Core"),
         os.path.join(ROOT_DIR, "adamant-modpack-Lib"),
+        os.path.join(ROOT_DIR, "adamant-modpack-Framework"),
+        os.path.join(ROOT_DIR, "adamant-modpack-coordinator"),
     ] + sorted(glob.glob(os.path.join(ROOT_DIR, "Submodules", "adamant-*")))
     return [d for d in targets if os.path.isfile(os.path.join(d, "thunderstore.toml"))]
 

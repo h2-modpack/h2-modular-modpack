@@ -34,4 +34,4 @@ h2-modpack-CharybdisBehavior
 h2-modpack-CardioTorchFix
 h2-modpack-BraidFix
 h2-modpack-Lib
-h2-modpack-Core
+h2-modpack-coordinator

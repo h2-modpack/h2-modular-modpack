@@ -57,7 +57,7 @@ jobs:
           REGISTRY_MODULES=$(gh api repos/$ORG/h2-modular-modpack/contents/Submodules \
             --jq '.[].name' | grep '^adamant-' | sed 's/^adamant-/h2-modpack-/')
 
-          mapfile -t ALL_REPOS <<< "$(printf 'h2-modpack-Lib\nh2-modpack-Core\n%s' "$REGISTRY_MODULES")"
+          mapfile -t ALL_REPOS <<< "$(printf 'h2-modpack-Lib\nh2-modpack-Framework\nh2-modpack-coordinator\n%s' "$REGISTRY_MODULES")"
 
           # If a filter is provided, only release those repos
           if [ -n "$FILTER" ]; then

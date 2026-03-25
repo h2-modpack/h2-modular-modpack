@@ -1,6 +1,10 @@
-[submodule "adamant-modpack-Core"]
-	path = adamant-modpack-Core
-	url = https://github.com/h2-modpack/h2-modpack-Core.git
+[submodule "adamant-modpack-Framework"]
+	path = adamant-modpack-Framework
+	url = https://github.com/h2-modpack/h2-modpack-Framework.git
+	branch = main
+[submodule "adamant-modpack-coordinator"]
+	path = adamant-modpack-coordinator
+	url = https://github.com/h2-modpack/h2-modpack-coordinator.git
 	branch = main
 [submodule "adamant-modpack-Lib"]
 	path = adamant-modpack-Lib

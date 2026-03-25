@@ -10,7 +10,7 @@ git init
 # 1. Manually link Core and Lib at the root level
 # (Adjust the repo URLs slightly if they are named differently on GitHub)
 echo "Linking Core and Lib..."
-git submodule add "https://github.com/$ORG_NAME/h2-modpack-Core.git" "adamant-modpack-Core"
+git submodule add "https://github.com/$ORG_NAME/h2-modpack-coordinator.git" "adamant-modpack-coordinator"
 git submodule add "https://github.com/$ORG_NAME/h2-modpack-Lib.git" "adamant-modpack-Lib"
 
 # 2. Loop through the Submodules directory for the standalone mods
