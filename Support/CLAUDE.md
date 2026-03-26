@@ -11,13 +11,15 @@ h2-modular-modpack/               # Shell repo
 ├── adamant-modpack-Lib/          # Shared utilities: backup, field types, state mgmt
 ├── Submodules/
 │   └── adamant-*/                # 35 standalone modules (each is its own repo)
-├── Setup/                        # Deployment + scaffolding scripts
+├── Setup/                        # Standalone submodule (h2-modpack/Setup)
 │   ├── deploy_all.py             # Full deploy orchestrator
 │   ├── deploy_links.py           # Symlinks only
 │   ├── deploy_manifests.py       # Manifest generation only
 │   ├── deploy_assets.py          # Icon + LICENSE copy only
 │   ├── deploy_hooks.py           # Git hooks config only
 │   ├── deploy_common.py          # Shared utilities (mod discovery, args)
+│   ├── commit_submodules.py      # Commit + push all Submodules/* with shared message
+│   ├── generate_manifest.py      # Single-mod manifest generation
 │   └── new_pack.py               # Scaffold a new shell repo (gh + git submodules)
 ├── Support/
 │   ├── CLAUDE.md                 # This file
@@ -110,26 +112,34 @@ Passed to special module `DrawTab` / `DrawQuickContent` as the `theme` parameter
 - **Submodule sync**: daily midnight UTC cron
 
 ## Deploy Scripts (Setup/)
-All deploy_* scripts accept `--overwrite` and `--profile NAME` (default: h2-dev).
+
+`Setup/` is a standalone submodule (`h2-modpack/Setup`). All deploy_* scripts accept `--overwrite` and `--profile NAME` (default: h2-dev).
 
 ```bash
-python Setup/deploy_all.py                    # full deploy
+python Setup/deploy_all.py                    # full deploy (assets + manifests + symlinks + hooks)
 python Setup/deploy_links.py                  # symlinks only
 python Setup/deploy_manifests.py --overwrite  # regenerate all manifests
 python Setup/deploy_hooks.py                  # configure git hooks
+python Setup/commit_submodules.py "msg"       # commit + push all Submodules/* with shared message
 ```
 
 ### Scaffolding a new pack
+
+Clone Setup standalone, run `new_pack.py`, then discard the clone (it re-enters as a submodule):
+
 ```bash
+git clone https://github.com/h2-modpack/Setup
 python Setup/new_pack.py \
-  --output ~/Projects/my-pack \
   --pack-id "my-pack" \
-  --title "My Pack" \
   --namespace mynamespace \
+  [--title "My Pack"] \
   [--name Modpack_Core] \
   [--org h2-modpack]
+cd ../my-pack-modpack
+python Setup/deploy_all.py
 ```
-Creates GitHub coordinator repo via `gh`, adds Lib/Framework as submodules, generates all coordinator files pre-filled, copies Setup/ scripts with customized `deploy_common.py`.
+
+Creates GitHub coordinator repo via `gh`, adds Lib/Framework/Setup as submodules, generates all coordinator files pre-filled.
 
 ## Common Tasks
 

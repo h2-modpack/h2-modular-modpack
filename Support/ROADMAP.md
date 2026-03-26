@@ -49,7 +49,11 @@ Where `Core._packId = "h2-modpack"` is set in Core's `main.lua`.
 
 ---
 
-## Phase 2 — Extract Framework library (significant refactor)
+## Phase 2 — Extract Framework library ✅ DONE
+
+> **HUD stacking** — implemented as multiple separate `ScreenData.HUD.ComponentData` elements, each named `ModpackMark_<packId>`, offset by `packIndex * 24px`. Revisit for in-game validation once a second modpack is created and both packs run simultaneously.
+
+## Phase 2 — Extract Framework library (detail)
 
 ### New component: `adamant-Modpack_Framework`
 
@@ -121,7 +125,7 @@ Solution — **self-registering offset**: `Framework.init` writes each pack's `p
 
 ---
 
-## Phase 3 — Multi-pack support
+## Phase 3 — Multi-pack support (next)
 
 Once Framework exists, a second modpack (e.g. `another-modpackcoordinator`) can use the same infrastructure:
 

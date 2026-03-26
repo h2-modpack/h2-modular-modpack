@@ -14,11 +14,11 @@ When you are running low on context, fill in the sections below and tell the use
 ## Session Snapshot
 
 ### Date
-March 25, 2026
+March 26, 2026
 
 ### What was being worked on
 
-**Phase 2: Framework extraction** — all orchestration logic (discovery, hash, HUD, UI) extracted from Core into a new reusable `adamant-modpack-Framework` library mod. Core renamed to coordinator. `new_pack.py` scaffolding script added to Setup/.
+**Phase 2: complete.** Framework extraction done, Setup/ extracted to standalone submodule, all housekeeping verified. Next: create a second modpack (run-director) using `new_pack.py`.
 
 ### Key decisions made this session
 
@@ -30,7 +30,7 @@ March 25, 2026
 
 4. **Core renamed to coordinator**: GitHub repo `h2-modpack-Core` → `h2-modpack-coordinator`. Local folder `adamant-modpack-Core` → `adamant-modpack-coordinator`. Thunderstore mod identity (`adamant-Modpack_Core`) unchanged.
 
-5. **Setup/ → own submodule (planned, not done)**: Discussed making Setup/ its own repo that shell repos reference as a submodule. `new_pack.py` is already in Setup/. Not yet extracted.
+5. **Setup/ → own submodule (done)**: `Setup/` is now its own repo (`h2-modpack/Setup`), referenced as a submodule in shell repos. `new_pack.py` lives there and adds it as a submodule in new packs. README added.
 
 6. **`new_pack.py`**: Scaffolds a new shell repo from scratch. Creates the coordinator GitHub repo via `gh repo create`, adds Lib and Framework as submodules, generates all coordinator files pre-filled, copies Setup/ scripts with a customized `deploy_common.py`. Usage: `python Setup/new_pack.py --output PATH --pack-id ID --title TITLE --namespace NS [--name Modpack_Core] [--org h2-modpack]`.
 
@@ -56,14 +56,15 @@ March 25, 2026
 
 ### Open issues / next steps
 
-- **Setup/ as its own submodule**: Extract `Setup/` into its own repo (`h2-modpack/h2-modpack-setup` or similar). Shell repos reference it as a submodule. `new_pack.py` already lives there and copies itself into new packs. Not done yet.
-- **`release-all.yaml`**: May need updating for coordinator rename (was `h2-modpack-Core`, now `h2-modpack-coordinator`). Check before next release.
-- **Framework not yet published to Thunderstore**: Version is `1.0.0`, CI in place, but no release has been cut yet.
-- **`new_pack.py` not yet tested end-to-end**: Logic is written, hasn't been run against a real new pack.
+- **Create second modpack** (run-director) via `new_pack.py` — this is Phase 3 / the next step.
+- **HUD stacking**: implemented as multiple `ScreenData.HUD.ComponentData` elements (`ModpackMark_<packId>`, `Y = 250 + (packIndex-1) * 24`). Needs in-game validation once two packs run simultaneously.
+- **Framework not yet published to Thunderstore**: Version is `1.0.0`, CI in place, no release cut yet.
+- **Update h2-modpack-template**: ✅ Done — `modpackModule = true` → `modpack = "h2-modpack"`, all "Core" references updated to "Framework"/"coordinator".
+- **Group tiny modules by semantic function**: Some standalone modules are very small; consider merging related ones into slightly larger cohesive mods (e.g. grouped by game mechanic or category).
 
 ### Current state of the codebase
 
-Framework is extracted and wired. Coordinator is ~50 lines. Tests pass (23 in Framework). Local deploy works. GUI registration is coordinator-owned. Scaffolding script is ready but untested.
+Phase 2 complete. Framework extracted and wired. Coordinator is 49 lines. Setup/ is a standalone submodule. Tests pass (23 in Framework). `release-all.yaml` already has `h2-modpack-coordinator` — no update needed. `new_pack.py` written but not yet run against a real second pack.
 
 ---
 
