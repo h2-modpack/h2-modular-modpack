@@ -150,3 +150,7 @@
 	path = Submodules/adamant-VictoryScreen
 	url = https://github.com/h2-modpack/h2-modpack-VictoryScreen.git
 	branch = main
+[submodule "Setup"]
+	path = Setup
+	url = https://github.com/h2-modpack/Setup.git
+	branch = main
