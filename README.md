@@ -1,54 +1,33 @@
-# H2 modpack
+# h2-modular-modpack
 
-Modular modpack for Hades II. Each module is a standalone mod that works independently or together through a shared coordinator (Core).
+Reference shell repo for the h2-modpack architecture. Demonstrates how Lib, Framework, a coordinator, and standalone module submodules wire together.
 
-## Repository structure
-
-```
-adamant-modpack-coordinator/    -- coordinator: unified UI, profiles, config hashing
-adamant-modpack-Lib/     -- shared library: module contract, field types, utilities
-Submodules/              -- all individual modules
-Setup/                   -- local deployment scripts
-```
-
-## Prerequisites
-
-- [r2modman](https://thunderstore.io/package/ebkr/r2modman/) (or r2modmanPlus) with a profile named `h2-dev`
-- Python 3
-- Administrator privileges (Windows) or root (Linux/macOS) for symlink creation
-
-## Local setup
-
-1. Clone the repo with submodules:
+## Structure
 
 ```
+h2-modular-modpack/
+├── adamant-ModpackShowcaseCore/   # Coordinator: pack identity, config, profiles
+├── adamant-ModpackFramework/      # Shared UI, discovery, hash, HUD
+├── adamant-ModpackLib/            # Shared utilities
+├── Setup/                         # Deploy scripts
+└── Submodules/                    # Game modules (one repo each)
+```
+
+## Setup
+
+```bash
 git clone --recurse-submodules https://github.com/h2-modpack/h2-modular-modpack.git
-
-git submodule foreach --quiet 'git checkout main'
-
+python Setup/deploy/deploy_all.py
 ```
 
-2. Run the setup script for your platform:
+Requires Python 3 and r2modman with a profile named `h2-dev`. On Windows, run `Setup/win.bat` as Administrator. On Linux/macOS, run `sudo ./Setup/lin.sh`.
 
-**Windows** — right-click `Setup/win.bat` and select "Run as administrator"
+## Starting a new pack
 
-**Linux/macOS** — `sudo ./Setup/lin.sh`
+See [Setup/README.md](Setup/README.md) for scaffolding a new pack from scratch.
 
-The script will, for each module: copy `icon.png` and `LICENSE` into `src/`, generate `manifest.json` from `thunderstore.toml`, and symlink `src/` and `data/` into the r2modman dev profile.
+## Architecture
 
-Individual tasks can be run separately (all support `--overwrite` and `--profile NAME`):
-
-```
-python Setup/deploy_links.py       # symlinks only
-python Setup/deploy_manifests.py   # regenerate manifests only
-python Setup/deploy_assets.py      # copy icon + LICENSE only
-python Setup/deploy_hooks.py       # configure git hooks only
-```
-
-3. Launch Hades II through r2modman using the `h2-dev` profile.
-
-## Contributing
-
-- [Core CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-coordinator/blob/main/CONTRIBUTING.md) — architecture, discovery, hash, UI staging
-- [Lib CONTRIBUTING.md](https://github.com/h2-modpack/h2-modpack-Lib/blob/main/CONTRIBUTING.md) — public API, module contract, field types
+- [adamant-ModpackFramework](https://github.com/h2-modpack/ModpackFramework) — full architecture docs
+- [adamant-ModpackLib](https://github.com/h2-modpack/ModpackLib) — shared utilities API
 - [h2-modpack-template](https://github.com/h2-modpack/h2-modpack-template) — starting point for new modules

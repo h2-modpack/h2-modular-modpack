@@ -1,38 +1,76 @@
-# Adamant Modpack — Architecture Overview
+# h2-modpack — Architecture Overview
 
 ## What this system is
 
-The adamant modpack is a collection of independent game-modifying modules unified by a single UI and configuration system. Each module lives in its own repository and can be installed standalone, but when `adamant-Modpack_Core` is present it discovers all installed modules automatically, hosts them in a shared window, and manages their configuration as a single shareable hash.
+A modular modpack system for Hades 2. Each module lives in its own repository and can be installed standalone, but when a coordinator is present it discovers all installed modules automatically, hosts them in a shared window, and manages their configuration as a single shareable hash.
 
 The design goal is zero coupling between modules: a module author writes their logic, declares a definition table, and the rest is handled for them.
 
 ---
 
+## Layer overview
+
+| Layer | Repo | Role |
+|---|---|---|
+| Coordinator | `adamant-ModpackXXXXCore` | Owns: packId, windowTitle, defaultProfiles, config.lua. Delegates everything else to Framework. |
+| Framework | `adamant-ModpackFramework` | Reusable library: discovery, hash, HUD, UI. Exposes `Framework.init(params)`. |
+| Lib | `adamant-ModpackLib` | Shared utilities used by Framework and standalone modules. |
+| Modules | `Submodules/adamant-*` | Standalone mods. Opt into the pack via `public.definition.modpack = packId`. |
+
+---
+
 ## Components
 
-### `adamant-Modpack_Core`
-The orchestrator. It owns:
-- **Discovery** — scans loaded mods at startup for `modpack = "modpack-namespace"`
-- **UI** — renders the shared window (sidebar, per-module tabs, quick setup, profiles, dev)
-- **Hash/profiles** — encodes all module state into a portable string; manages named profile slots
-- **HUD** — injects the fingerprint overlay into the game's HUD
+### Coordinator (`adamant-ModpackXXXXCore`)
+~50 lines. Owns only: `packId`, `windowTitle`, `defaultProfiles`, `config.lua` schema. Registers GUI callbacks once in `modutil.once_loaded.game` and delegates all orchestration to Framework:
 
-Core has no knowledge of any specific module's internals. It communicates through the module contract (see below).
+```lua
+local PACK_ID = "speedrun"
 
-### `adamant-Modpack_Lib`
-Shared infrastructure, accessed by every module as `rom.mods['adamant-Modpack_Lib']`. It provides:
+modutil.once_loaded.game(function()
+    local Framework = mods['adamant-ModpackFramework']
+    rom.gui.add_imgui(Framework.getRenderer(PACK_ID))
+    rom.gui.add_to_menu_bar(Framework.getMenuBar(PACK_ID))
+    loader.load(init, init)
+end)
+```
+
+Framework never calls `rom.gui.add_imgui` directly — the coordinator owns GUI registration.
+
+### Framework (`adamant-ModpackFramework`)
+Reusable library. Coordinator calls `Framework.init(params)` and gets everything for free.
+
+```
+src/
+  main.lua        -- Framework table, ENVY wiring, Framework.init, public API
+  discovery.lua   -- createDiscovery(packId, config, lib)
+  hash.lua        -- createHash(discovery, config, lib, packId)
+  ui_theme.lua    -- createTheme()
+  hud.lua         -- createHud(packId, packIndex, hash, theme, config, modutil)
+  ui.lua          -- createUI(discovery, hud, theme, def, config, lib, packId, windowTitle)
+```
+
+Public API:
+- `Framework.init(params)` — initialize or reinitialize a coordinator
+- `Framework.getRenderer(packId)` — stable late-binding imgui callback
+- `Framework.getMenuBar(packId)` — stable late-binding menu bar callback
+
+**Critical**: Framework exposes API via `public.init = Framework.init` (not `public = Framework`). ENVY holds a reference to the original `public` table — reassigning the variable doesn't work.
+
+### Lib (`adamant-ModpackLib`)
+Shared infrastructure, accessed by every module as `rom.mods['adamant-ModpackLib']`. Provides:
 - `createBackupSystem()` — deep-copy backup and restore of game data tables
 - `createSpecialState()` — builds a staging table + snapshot/sync functions from a stateSchema
-- `isEnabled(config)` — checks a module's own `Enabled` flag AND the master toggle when Core is present
+- `isEnabled(config)` — checks a module's own `Enabled` flag AND the master toggle when a coordinator is present
 - `warn(msg)` — framework diagnostic, gated on `lib.config.DebugMode`
 - `log(name, enabled, msg)` — per-module trace, gated on the caller's own `config.DebugMode`
 - `validateSchema(schema, label)` — checks a stateSchema at declaration time, warns on bad fields
 - `drawField(ui, field, value, width)` — renders a widget for a given field descriptor type
 
-Lib has no knowledge of Core. Any module can use it whether or not Core is installed.
+Lib has no knowledge of Framework or the coordinator. Any module can use it standalone.
 
 ### Individual modules
-Each module is its own mod package. It declares a `definition` table and implements logic. It depends on Lib but is otherwise self-contained. Core discovers it; modules do not register themselves with Core.
+Each module is its own mod package. It declares a `definition` table and implements logic. It depends on Lib but is otherwise self-contained. Framework discovers it; modules do not register themselves.
 
 ### External dependencies
 - **Chalk** — config file persistence (`config.lua` per mod). Slow I/O, not used in the render loop.
@@ -53,7 +91,7 @@ Game starts
        └─ schedules modutil.once_loaded.game(...)
 
 Game data loads
-  ├─ Core runs discovery (scans rom.mods for modpack = "modpack-namespace")
+  ├─ Framework runs discovery (scans rom.mods for modpack = packId)
   └─ each module's loader fires:
        ├─ import_as_fallback(rom.game)   ← makes game globals available
        ├─ registerHooks()                ← wraps game functions via ModUtil
@@ -61,13 +99,13 @@ Game data loads
 
 Player is in game
   ├─ hooks fire on game events (SetTraitsOnLoot, StartNewRun, etc.)
-  └─ Core renders its UI window each frame:
+  └─ Framework renders its UI window each frame:
        ├─ reads staging (plain Lua table — fast)
        ├─ calls module.DrawTab / DrawQuickContent for special modules
        └─ on user interaction → onChanged() → SyncToConfig() → Chalk write
 
 Hash / profiles
-  ├─ Core computes hash from all current configs
+  ├─ Framework computes hash from all current configs
   └─ HUD fingerprint updates on room transition
 ```
 
@@ -76,12 +114,12 @@ Hash / profiles
 ## Regular modules vs special modules
 
 ### Regular module
-A module that has a simple on/off state and optional inline options (dropdowns, checkboxes). Core renders its row in the module list and optionally an options panel. The module author only writes game logic.
+A module that has a simple on/off state and optional inline options (dropdowns, checkboxes). Framework renders its row in the module list and optionally an options panel. The module author only writes game logic.
 
 Config shape: `config.Enabled` plus flat option keys (`config.Mode`, `config.Strict`, etc.).
 
 ### Special module
-A module with complex, structured configuration that deserves its own sidebar tab. It owns its own UI entirely and declares a `stateSchema` so Core can hash its state.
+A module with complex, structured configuration that deserves its own sidebar tab. It owns its own UI entirely and declares a `stateSchema` so Framework can hash its state.
 
 Config shape: `config.Enabled` plus arbitrarily nested data (e.g. `config.FirstHammers.WeaponAxe`).
 
@@ -108,7 +146,7 @@ For special modules, `lib.createSpecialState(config, stateSchema)` builds the st
 ## The hash and profile pipeline
 
 ### Canonical string (the shareable hash)
-Core walks all discovered modules and specials and collects every value that differs from its declared default:
+Framework walks all discovered modules and specials and collects every value that differs from its declared default:
 
 ```
 _v=1|ModId=1|ModId.OptionKey=value|adamant-SpecialMod.configKey=value
@@ -129,13 +167,13 @@ A dual-pass djb2 checksum of the canonical string, base62-encoded to a fixed 12-
 `ApplyConfigHash` parses the canonical string. For each module/field: if a key is present in the hash, apply that value; if absent, reset to the declared default. Unknown keys are ignored (forward compatibility). The version token `_v` must be present or the hash is rejected.
 
 ### Profiles
-Named slots (stored in Core's own config) each containing a canonical hash string, a display name, and a tooltip. Saving captures the current hash. Loading calls `ApplyConfigHash` then re-snapshots all staging tables.
+Named slots (stored in the coordinator's own config) each containing a canonical hash string, a display name, and a tooltip. Saving captures the current hash. Loading calls `ApplyConfigHash` then re-snapshots all staging tables.
 
 ---
 
 ## The theme contract
 
-Core passes a `theme` table to `DrawTab(ui, onChanged, theme)` and `DrawQuickContent(ui, onChanged, theme)`. This table contains:
+Framework passes a `theme` table to `DrawTab(ui, onChanged, theme)` and `DrawQuickContent(ui, onChanged, theme)`. This table contains:
 
 - `theme.colors` — the full color palette (`info`, `success`, `error`, `warning`, `text`, `textDisabled`, and all widget background colors)
 - `theme.FIELD_MEDIUM / FIELD_NARROW / FIELD_WIDE` — layout proportions as fraction of window width
@@ -145,54 +183,49 @@ Core passes a `theme` table to `DrawTab(ui, onChanged, theme)` and `DrawQuickCon
 Theme does **not** provide text-color helper functions. Modules call ImGui directly:
 
 ```lua
--- Colored text
 ui.TextColored(r, g, b, a, text)
-
--- Disabled/hint text (auto-uses ImGuiCol.TextDisabled, themed by PushTheme)
 ui.TextDisabled(text)
 
--- Scoped header text color (tight push/pop = zero blast radius)
 local headerColor = (colors and colors.info) or {1, 1, 1, 1}
 ui.PushStyleColor(ImGuiCol.Text, table.unpack(headerColor))
 local open = ui.CollapsingHeader("Section")
 ui.PopStyleColor()
 ```
 
-Label column offset (where the input widget starts after a label) is **not** in theme — it is module-specific because it depends on the length of the module's label text. Each module declares its own `DEFAULT_LABEL_OFFSET`.
+Label column offset is not in theme — it is module-specific. Each module declares its own `DEFAULT_LABEL_OFFSET`.
 
 ---
 
 ## File map
 
 ```
-adamant-Modpack_Core/
-  src/
-    main.lua          — entry point, wires Core table, imports all src files
-    discovery.lua     — scans rom.mods, builds Discovery (modules, specials, categories)
-    hash.lua          — GetConfigHash / ApplyConfigHash / EncodeBase62 / DecodeBase62
-    hud.lua           — injects mod marker component, updates fingerprint display
-    ui.lua            — full ImGui window: sidebar, tabs, profiles, dev panel
-    ui_theme.lua      — color palette, layout constants, PushTheme/PopTheme
-  tests/
-    all.lua           — test runner
-    TestUtils.lua     — engine mock, MockDiscovery factory
-    TestHash.lua      — hash encoding/decoding/round-trip tests
-
-adamant-Modpack_Lib/
-  src/
-    main.lua          — all lib utilities (one file, accessed as a mod)
-  tests/
-    all.lua           — test runner
-    TestUtils.lua     — engine mock, lib loader
-    Test*.lua         — per-feature test suites
+h2-modular-modpack/                    -- reference shell repo
+  adamant-ModpackShowcaseCore/         -- example coordinator (~50 lines)
+    src/main.lua                       -- ENVY wiring, config, def, Framework.init call
+    src/config.lua                     -- Chalk config schema
+  adamant-ModpackFramework/            -- reusable library
+    src/main.lua                       -- Framework table, public API
+    src/discovery.lua                  -- module discovery
+    src/hash.lua                       -- hash encode/decode/apply
+    src/hud.lua                        -- HUD fingerprint injection
+    src/ui.lua                         -- full ImGui window
+    src/ui_theme.lua                   -- color palette, layout constants
+    tests/                             -- LuaUnit tests (hash round-trips, fingerprint stability)
+  adamant-ModpackLib/                  -- shared utilities
+    src/main.lua                       -- all lib utilities (one file)
+    tests/                             -- LuaUnit tests (field types, backup, state mgmt)
+  Setup/                               -- deploy + scaffold scripts
+    deploy/                            -- local deployment scripts
+    scaffold/                          -- new_pack.py, new_module.py, register_submodules.py
+    migrate/                           -- transfer_repos.py, rewire.py, bulk_add.py
+    templates/                         -- file templates for scaffolding
+  Submodules/adamant-*/                -- standalone modules (each its own repo)
 
 adamant-FirstHammer/  (example special module)
-  src/
-    main.lua          — definition, data tables, hooks, DrawTab, DrawQuickContent
-  config.lua          — default config (Chalk reads this)
+  src/main.lua                         -- definition, data tables, hooks, DrawTab, DrawQuickContent
+  config.lua                           -- default config (Chalk reads this)
 
-h2-modpack-template/
-  src/
-    main.lua          — regular module template
-    main_special.lua  — special module template
+h2-modpack-template/                   -- starting point for new modules
+  src/main.lua                         -- regular module template
+  src/main_special.lua                 -- special module template
 ```
